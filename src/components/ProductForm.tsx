@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import Modal from '@/components/Modal'
-import type { ProductFormData } from '@/types/product'
+import type {ProductFormData } from '@/types/product'
+import { useForm } from '@/hooks/useForm'
 
 interface ProductFormProps {
   onSubmit: (data: ProductFormData) => boolean
@@ -14,26 +15,34 @@ interface FormErrors {
   cantidad?: string
 }
 
+export interface ProductForm {
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  cantidad: string;
+}
+
 export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
-  const [codigo, setCodigo] = useState('')
-  const [nombre, setNombre] = useState('')
-  const [descripcion, setDescripcion] = useState('')
-  const [cantidad, setCantidad] = useState('')
+  const { form, handleChange,reset } = useForm<ProductForm>({
+                                      cantidad:"",
+                                      codigo:"",
+                                      descripcion:"",
+                                      nombre:""});
   const [errors, setErrors] = useState<FormErrors>({})
 
   const validate = (): boolean => {
     const next: FormErrors = {}
 
-    if (codigo.trim() === '' || Number.isNaN(Number(codigo))) {
+    if (form.codigo.toString().trim() === '' || Number.isNaN(form.codigo)) {
       next.codigo = 'Ingresa un código numérico válido.'
     }
-    if (nombre.trim().length < 2) {
+    if (form.nombre.trim().length < 2) {
       next.nombre = 'El nombre debe tener al menos 2 caracteres.'
     }
-    if (descripcion.trim().length === 0) {
+    if (form.descripcion.trim().length === 0) {
       next.descripcion = 'La descripción es obligatoria.'
     }
-    if (cantidad.trim() === '' || Number.isNaN(Number(cantidad)) || Number(cantidad) < 0) {
+    if (form.cantidad.toString().trim() === '' || Number.isNaN(form.cantidad) || Number(form.cantidad )< 0) {
       next.cantidad = 'Ingresa una cantidad numérica válida (0 o más).'
     }
 
@@ -46,10 +55,10 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
     if (!validate()) return
 
     const created = onSubmit({
-      codigo: Number(codigo),
-      nombre: nombre.trim(),
-      descripcion: descripcion.trim(),
-      cantidad: Number(cantidad),
+      codigo: Number(form.codigo),
+      nombre: form.nombre.trim(),
+      descripcion: form.descripcion.trim(),
+      cantidad: Number(form.cantidad),
     })
     
     if (!created) {
@@ -57,7 +66,9 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
         ...prev,
         codigo: "Ya existe un producto con ese código.",
       }))
+      return;
     }
+    reset();
   }
 
   return (
@@ -69,10 +80,11 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
           </label>
           <input
             id="codigo"
+            name="codigo"
             type="number"
             inputMode="numeric"
-            value={codigo}
-            onChange={(e) => {setCodigo(e.target.value);
+            value={form.codigo}
+            onChange={(e) => {handleChange(e);
               if (errors.codigo) {
                 setErrors((prev) => ({
                   ...prev,
@@ -102,9 +114,10 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
           </label>
           <input
             id="nombre"
+            name="nombre"
             type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={form.nombre}
+            onChange={(e) => handleChange(e)}
             aria-invalid={Boolean(errors.nombre)}
             aria-describedby={errors.nombre ? 'nombre-error' : undefined}
             className={`w-full rounded-lg border px-3 py-2.5 text-sm shadow-sm outline-none transition focus:ring-2 ${
@@ -127,8 +140,9 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
           </label>
           <textarea
             id="descripcion"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            name="descripcion"
+            value={form.descripcion}
+            onChange={(e) => handleChange(e)}
             aria-invalid={Boolean(errors.descripcion)}
             aria-describedby={errors.descripcion ? 'descripcion-error' : undefined}
             rows={3}
@@ -152,11 +166,12 @@ export default function ProductForm({ onSubmit, onClose }: ProductFormProps) {
           </label>
           <input
             id="cantidad"
+            name="cantidad"
             type="number"
             inputMode="numeric"
             min={0}
-            value={cantidad}
-            onChange={(e) => setCantidad(e.target.value)}
+            value={form.cantidad}
+            onChange={(e) => handleChange(e)}
             aria-invalid={Boolean(errors.cantidad)}
             aria-describedby={errors.cantidad ? 'cantidad-error' : undefined}
             className={`w-full rounded-lg border px-3 py-2.5 text-sm shadow-sm outline-none transition focus:ring-2 ${

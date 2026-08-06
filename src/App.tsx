@@ -57,13 +57,10 @@ export default function App() {
 
 
   const submitFormAddProduct = (data: ProductFormData): boolean => {
-
     const result = addProduct(data);
-  
     if (result) {
       setIsFormOpen(false);
     }
-  
     return result;
   };
 
