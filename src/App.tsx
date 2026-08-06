@@ -7,7 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 
 import { useDebounce } from '@/hooks/useDebounce'
 import type { Product, ProductFormData, SortState } from '@/types/product'
-import { useProducts } from './context/productContext'
+import { useProducts } from './hooks/useProduct'
 import ProductForm from '@/components/ProductForm'
 import ConfirmDialog from '@/components/ConfirmDialog'
 
