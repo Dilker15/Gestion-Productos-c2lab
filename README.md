@@ -1,61 +1,170 @@
 # Gestor de Productos
 
-Aplicación de gestión de productos construida con **React + TypeScript + Vite**, para la prueba técnica de Desarrollador Junior React / Next.
+Aplicación web para la gestión de productos desarrollada con **React + TypeScript + Vite**.
 
-## Requisitos cubiertos
+Permite crear, visualizar, buscar, ordenar y eliminar productos, manteniendo la información guardada en el navegador mediante `localStorage`.
 
-1. **Interfaz gráfica**: creación y visualización de productos en una lista.
-2. **Estructura de producto**: `codigo`, `nombre`, `descripcion`, `cantidad`, `creacion` (autogenerada).
-3. **Funciones mínimas**: crear, listar, eliminar, ordenar (por cantidad, creación, código y nombre, ascendente/descendente) y filtrar por nombre.
-4. **Persistencia**: `localStorage`, sin backend.
-5. **Manejo de estado**: **Zustand**.
-6. **Buenas prácticas**: componentes reutilizables, carpetas separadas (`components`, `store`, `hooks`, `types`, `utils`), TypeScript en todo el proyecto.
-7. **Extras implementados**: TailwindCSS, diseño responsivo (móvil/desktop) y optimización de carga con **lazy loading / dynamic imports**.
-   - No incluidos (fuera de alcance de esta entrega): despliegue en Vercel/Netlify y tests con Jest/Testing Library.
+## Demo
+
+Aplicación desplegada en Vercel:
+
+https://gestion-productos-c2lab-gr7t0wplr-dilker72-8307s-projects.vercel.app
+
+## Capturas
+
+### Vista principal
+
+![Vista principal](./screenshots/image1.png)
+
+---
+![Vista principal](./screenshots/image2.png)
+
+
+### Vista responsive móvil
+
+![Vista principal](./screenshots/image3.png)
+
+---
+![Vista principal](./screenshots/image4.png)
+
+### Formulario de creación de producto
+
+![Vista principal](./screenshots/image5.png)
+ ---
+
+![Vista principal](./screenshots/image6.png)
+ ---
+![Vista principal](./screenshots/image7.png)
+ ---
+## Características principales
+
+* Crear nuevos productos.
+* Listar productos registrados.
+* Eliminar productos.
+* Buscar productos por nombre.
+* Ordenar productos por:
+
+  * cantidad
+  * fecha de creación
+  * código
+  * nombre
+* Orden ascendente y descendente.
+* Persistencia de datos usando `localStorage`.
+* Validación de formularios.
+* Validación para evitar registrar productos con un código existente.
+* Diseño adaptable para dispositivos móviles y escritorio.
+
+---
+
+## Tecnologías utilizadas
+
+* React
+* TypeScript
+* Vite
+* Context API para manejo del estado global
+* Tailwind CSS
+* ESLint
+* UUID para generación de identificadores únicos
+
+---
 
 ## Instalación y ejecución local
 
-Requisitos: Node.js 18+ y npm.
+Requisitos:
+
+* Node.js 18 o superior
+* npm
+
+Clonar el repositorio:
 
 ```bash
-# 1. Instalar dependencias
-npm install
+git clone https://github.com/Dilker15/Gestion-Productos-c2lab.git
+```
 
-# 2. Levantar el servidor de desarrollo
+Instalar dependencias:
+
+```bash
+npm install
+```
+
+Ejecutar el proyecto:
+
+```bash
 npm run dev
 ```
 
-La app quedará disponible en `http://localhost:5173`.
+La aplicación estará disponible en:
 
-Otros scripts disponibles:
-
-```bash
-npm run build     # build de producción (tsc + vite build) en /dist
-npm run preview   # sirve la build de producción localmente
+```
+http://localhost:5173
 ```
 
-## Decisiones técnicas
+---
 
-- **Vite** como bundler: arranque en frío casi instantáneo y HMR rápido, ideal para una app de este tamaño frente a alternativas más pesadas.
-- **Zustand** para el manejo de estado global de productos: API mínima (un solo hook `useProductStore`), sin el boilerplate de Redux ni el "provider hell" de anidar múltiples Contexts. Su middleware `persist` resuelve la persistencia en `localStorage` de forma declarativa (serializa/rehidrata automáticamente), evitando escribir manualmente `useEffect` + `JSON.stringify`/`JSON.parse` para sincronizar el store con el storage.
-- **TailwindCSS** para los estilos: permite iterar rápido en la UI manteniendo todo el diseño responsivo (mobile-first) sin salir del JSX ni mantener archivos CSS separados por componente.
-- **Lazy loading / dynamic imports**: `ProductForm` y `ConfirmDialog` se cargan con `React.lazy()` + `Suspense` solo cuando el usuario abre el modal correspondiente (crear o eliminar un producto). Esto reduce el bundle inicial — se puede comprobar en la salida de `npm run build`, donde ambos componentes aparecen como chunks independientes (`ProductForm-*.js`, `ConfirmDialog-*.js`) en lugar de formar parte del bundle principal. Además, `vite.config.ts` separa manualmente `react`/`react-dom` (`vendor`) y `zustand` (`state`) en sus propios chunks para aprovechar mejor el cache del navegador entre despliegues.
-- **uuid** para generar el `id` interno de cada producto (usado como key de React y para el borrado), independiente del `codigo` que ingresa el usuario.
-- **Debounce en la búsqueda** (`useDebounce`, 200ms): evita recalcular el filtrado/ordenamiento en cada tecla presionada.
-- **Estructura de carpetas**:
-  ```
-  src/
-    components/   # UI reutilizable (Header, ProductForm, ProductList, ProductItem, SearchBar, SortControls, Modal, etc.)
-    store/        # Estado global (Zustand + persistencia)
-    hooks/        # Hooks personalizados (useDebounce)
-    types/        # Tipos de TypeScript compartidos
-    utils/        # Utilidades puras (formateo de fechas)
-  ```
-- **Validación de formulario**: validación simple en el cliente (código y cantidad numéricos, nombre y descripción no vacíos) con mensajes de error accesibles (`aria-invalid`, `aria-describedby`).
-- **Ordenamiento**: implementado en el cliente con `Array.prototype.sort`, memoizado con `useMemo` junto al filtrado para no recalcular en cada render.
+## Scripts disponibles
 
-## Notas de UI/UX
+Ejecutar en desarrollo:
 
-- Diseño completamente responsivo: en móvil los productos se muestran en una columna y el formulario aparece como hoja inferior (bottom sheet); en desktop se muestra en grilla de hasta 3 columnas y el formulario como modal centrado.
-- Estado vacío diferenciado cuando no hay productos vs. cuando una búsqueda no arroja resultados.
-- Indicador visual de stock bajo (≤ 5 unidades).
+```bash
+npm run dev
+```
+
+Crear versión de producción:
+
+```bash
+npm run build
+```
+
+Ejecutar validación de código con ESLint:
+
+```bash
+npm run lint
+```
+
+---
+
+##  Estructura del proyecto
+
+```
+src/
+│
+├── components/     # Componentes reutilizables de la interfaz
+├── context/        # Context API y Provider global
+├── hooks/          # Hooks personalizados
+├── types/          # Tipos e interfaces TypeScript
+├── utils/          # Funciones auxiliares
+│
+└── main.tsx
+```
+
+---
+
+## Decisiones del proyecto
+
+* Se utilizó **Context API** para manejar el estado global de los productos, evitando agregar librerías externas y manteniendo una solución simple para el tamaño actual de la aplicación.
+
+* Se implementó persistencia con `localStorage`, permitiendo conservar los productos registrados aunque el usuario cierre el navegador.
+
+* Se separó la aplicación en componentes reutilizables para mantener el código organizado y fácil de mantener.
+
+* Se agregó validación en el formulario para controlar datos incorrectos y evitar productos duplicados mediante el código del producto.
+
+* Se utilizó `uuid` para generar identificadores únicos internos para cada producto.
+
+* Se agregó un hook personalizado `useDebounce` para mejorar la búsqueda evitando ejecutar filtros innecesarios mientras el usuario escribe.
+
+* Se configuró ESLint para detectar problemas comunes y mantener una mejor calidad del código.
+
+---
+
+## Diseño
+
+* Interfaz responsive adaptada para móvil y escritorio.
+* Formularios con mensajes de validación.
+* Indicador visual para productos con stock bajo (cantidad menor o igual a 5).
+
+---
+
+## Autor
+
+Dilker Cartagena
